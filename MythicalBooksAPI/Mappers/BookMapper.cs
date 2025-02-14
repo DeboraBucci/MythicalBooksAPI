@@ -10,19 +10,20 @@ namespace MythicalBooksAPI.Mappers
             return new BookDto
             {
                 Id = book.Id,
-                Ratings = book.Ratings,
+                RatingCount = book.RatingCount,
                 Pages = book.Pages,
                 Stock = book.Stock,
                 Weight = book.Weight,
-                Rating = book.Rating,
+                AverageRating = book.AverageRating,
                 Price = book.Price,
                 Title = book.Title,
                 Description = book.Description,
-                ISBN = book.ISBN,
+                ISBN10 = book.ISBN10,
+                ISBN13 = book.ISBN13,
                 Image = book.Image,
                 Language = book.Language,
                 PhysicalFormat = book.PhysicalFormat,
-
+                PublishedYear = book.PublishedYear,
                 Authors = 
                     book.BookAuthors
                     .Select(ba => AuthorMapper.ToAuthorDto(ba.Author))
