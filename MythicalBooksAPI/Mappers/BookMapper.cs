@@ -5,9 +5,9 @@ namespace MythicalBooksAPI.Mappers
 {
     public static class BookMapper
     {
-        public static BookDto ToBookDto (this Book book)
+        public static BookDetailDto ToBookDetailDto (this Book book)
         {
-            return new BookDto
+            return new BookDetailDto
             {
                 Id = book.Id,
                 RatingCount = book.RatingCount,
@@ -37,6 +37,25 @@ namespace MythicalBooksAPI.Mappers
                 Publishers = 
                     book.BookPublishers
                     .Select(bp => PublisherMapper.ToPublisherDto(bp.Publisher))
+                    .ToList(),
+            };
+        }
+
+        public static BookDto ToBookDto(this Book book)
+        {
+            return new BookDto
+            {
+                Id = book.Id,
+                RatingCount = book.RatingCount,
+                Stock = book.Stock,
+                AverageRating = book.AverageRating,
+                Price = book.Price,
+                Title = book.Title,
+                Image = book.Image,
+                Language = book.Language,
+                Authors =
+                    book.BookAuthors
+                    .Select(ba => AuthorMapper.ToAuthorDto(ba.Author))
                     .ToList(),
             };
         }

@@ -36,6 +36,30 @@ namespace MythicalBooksAPI.Controllers
             return Ok(books);
         }
 
+        [HttpGet("search/{search}")]
+        public async Task<IActionResult> GetBooks([FromRoute] string search)
+        {
+            var books = await _context
+                .Books
+                .Include(b => b.BookAuthors)
+                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.BookCategories)
+                    .ThenInclude(bc => bc.Category)
+                .Include(b => b.BookPublishers)
+                    .ThenInclude(bp => bp.Publisher)
+                .Where(b => 
+                    b.Title.Contains(search) ||
+                    (b.ISBN10 ?? "").Contains(search) ||
+                    (b.ISBN13 ?? "").Contains(search) ||
+                    b.BookAuthors.Any(ba => ba.Author.Name.Contains(search)) ||
+                    b.BookPublishers.Any(bp => bp.Publisher.Name.Contains(search))
+                    )
+                .Select(b => BookMapper.ToBookDto(b))
+                .ToListAsync();
+
+            return Ok(books);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById([FromRoute] int id)
         {
@@ -52,7 +76,7 @@ namespace MythicalBooksAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(book.ToBookDto());
+            return Ok(book.ToBookDetailDto());
         }
     }
 }
