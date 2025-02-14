@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data;
 using MythicalBooksAPI.Dtos;
 using MythicalBooksAPI.Mappers;
+using MythicalBooksAPI.Models.Entities;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -33,6 +34,25 @@ namespace MythicalBooksAPI.Controllers
                 .ToListAsync();
 
             return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById([FromRoute] int id)
+        {
+            var book = await _context.Books
+            .AsNoTracking() // Optimizes performance
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Include(b => b.BookPublishers).ThenInclude(bp => bp.Publisher)
+            .Where(b => b.Id == id)
+            .FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book.ToBookDto());
         }
     }
 }
