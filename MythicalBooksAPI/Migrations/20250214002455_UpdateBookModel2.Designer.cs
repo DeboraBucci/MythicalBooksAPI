@@ -12,8 +12,8 @@ using MythicalBooksAPI.Data;
 namespace MythicalBooksAPI.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250212172347_AddNullableFields")]
-    partial class AddNullableFields
+    [Migration("20250214002455_UpdateBookModel2")]
+    partial class UpdateBookModel2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,8 +67,10 @@ namespace MythicalBooksAPI.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ISBN")
-                        .IsRequired()
+                    b.Property<string>("ISBN10")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN13")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
@@ -87,6 +89,9 @@ namespace MythicalBooksAPI.Migrations
 
                     b.Property<double?>("Price")
                         .HasColumnType("float");
+
+                    b.Property<int?>("PublishedYear")
+                        .HasColumnType("int");
 
                     b.Property<double?>("Rating")
                         .HasColumnType("float");
@@ -118,19 +123,9 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PublisherId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "AuthorId");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("BookAuthors");
                 });
@@ -143,19 +138,9 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PublisherId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "CategoryId");
 
-                    b.HasIndex("AuthorId");
-
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("BookCategories");
                 });
@@ -168,17 +153,7 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("PublisherId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "PublisherId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("PublisherId");
 
@@ -233,14 +208,6 @@ namespace MythicalBooksAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Category", null)
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("CategoryId");
-
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", null)
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("PublisherId");
-
                     b.Navigation("Author");
 
                     b.Navigation("Book");
@@ -248,10 +215,6 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookCategory", b =>
                 {
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Author", null)
-                        .WithMany("BookCategories")
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("MythicalBooksAPI.Models.Entities.Book", "Book")
                         .WithMany("BookCategories")
                         .HasForeignKey("BookId")
@@ -264,10 +227,6 @@ namespace MythicalBooksAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", null)
-                        .WithMany("BookCategories")
-                        .HasForeignKey("PublisherId");
-
                     b.Navigation("Book");
 
                     b.Navigation("Category");
@@ -275,19 +234,11 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookPublisher", b =>
                 {
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Author", null)
-                        .WithMany("BookPublishers")
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("MythicalBooksAPI.Models.Entities.Book", "Book")
                         .WithMany("BookPublishers")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Category", null)
-                        .WithMany("BookPublishers")
-                        .HasForeignKey("CategoryId");
 
                     b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", "Publisher")
                         .WithMany("BookPublishers")
@@ -303,10 +254,6 @@ namespace MythicalBooksAPI.Migrations
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Author", b =>
                 {
                     b.Navigation("BookAuthors");
-
-                    b.Navigation("BookCategories");
-
-                    b.Navigation("BookPublishers");
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Book", b =>
@@ -320,19 +267,11 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Category", b =>
                 {
-                    b.Navigation("BookAuthors");
-
                     b.Navigation("BookCategories");
-
-                    b.Navigation("BookPublishers");
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Publisher", b =>
                 {
-                    b.Navigation("BookAuthors");
-
-                    b.Navigation("BookCategories");
-
                     b.Navigation("BookPublishers");
                 });
 #pragma warning restore 612, 618

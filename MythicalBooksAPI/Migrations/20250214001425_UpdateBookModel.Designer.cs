@@ -12,8 +12,8 @@ using MythicalBooksAPI.Data;
 namespace MythicalBooksAPI.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250210185433_initialMigration")]
-    partial class initialMigration
+    [Migration("20250214001425_UpdateBookModel")]
+    partial class UpdateBookModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,17 +34,15 @@ namespace MythicalBooksAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Birth_Date")
+                    b.Property<DateTime?>("Birth_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Death_Date")
+                    b.Property<DateTime?>("Death_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Fuller_Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -54,26 +52,6 @@ namespace MythicalBooksAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Bio = "British author, best known for Harry Potter.",
-                            Birth_Date = new DateTime(1965, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Death_Date = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Fuller_Name = "Joanne Kathleen Rowling",
-                            Name = "J.K. Rowling"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Bio = "Author of The Lord of the Rings.",
-                            Birth_Date = new DateTime(1892, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Death_Date = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Fuller_Name = "John Ronald Reuel Tolkien",
-                            Name = "J.R.R. Tolkien"
-                        });
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Book", b =>
@@ -89,35 +67,39 @@ namespace MythicalBooksAPI.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ISBN")
-                        .IsRequired()
+                    b.Property<string>("ISBN10")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN13")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Language")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Pages")
+                    b.Property<int?>("Pages")
                         .HasColumnType("int");
 
                     b.Property<string>("PhysicalFormat")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
+                    b.Property<double?>("Price")
                         .HasColumnType("float");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Ratings")
+                    b.Property<int?>("PublishedYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Stock")
+                    b.Property<double?>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("Ratings")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Stock")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -125,46 +107,12 @@ namespace MythicalBooksAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("Weight")
+                    b.Property<decimal?>("Weight")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Books");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "\"Harry Potter and the Sorcerer’s Stone\" is the first book in J.K. Rowling’s Harry Potter series, introducing readers to Harry Potter, a young boy who discovers he is a wizard on his 11th birthday. He is invited to attend Hogwarts School of Witchcraft and Wizardry, where he befriends Ron Weasley and Hermione Granger, while uncovering the truth about his past and the dark wizard Lord Voldemort. Alongside magical lessons, hidden secrets, and a thrilling mystery involving the Sorcerer’s Stone, Harry must navigate his new world while facing unexpected dangers.",
-                            ISBN = "978-3-16-148410-0",
-                            Image = "https://example.com/harrypotter.jpg",
-                            Language = "English",
-                            Pages = 320,
-                            PhysicalFormat = "Hardcover",
-                            Price = 29.989999999999998,
-                            Rating = 4.8000001907348633,
-                            Ratings = 0,
-                            Stock = 100,
-                            Title = "Harry Potter and the Sorcerer’s Stone",
-                            Weight = 0m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "\"The Lord of the Rings\" is a high-fantasy epic by J.R.R. Tolkien, following the journey of Frodo Baggins, a hobbit who inherits the powerful One Ring from his uncle, Bilbo Baggins. Tasked with destroying the Ring to prevent the dark lord Sauron from conquering Middle-earth, Frodo embarks on a perilous adventure alongside a diverse group of allies, known as the Fellowship of the Ring. The story spans across the lands of Rivendell, Rohan, Gondor, and the dreaded Mordor, as they battle against orcs, wraiths, and other dark forces. Tolkien’s masterpiece is a tale of courage, sacrifice, and the enduring battle between light and darkness.",
-                            ISBN = "978-0-261-10320-0",
-                            Image = "https://example.com/lotr.jpg",
-                            Language = "English",
-                            Pages = 1216,
-                            PhysicalFormat = "Paperback",
-                            Price = 39.990000000000002,
-                            Rating = 4.9000000953674316,
-                            Ratings = 0,
-                            Stock = 50,
-                            Title = "The Lord of the Rings",
-                            Weight = 0m
-                        });
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookAuthor", b =>
@@ -175,19 +123,9 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PublisherId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "AuthorId");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("BookAuthors");
                 });
@@ -200,19 +138,9 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PublisherId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "CategoryId");
 
-                    b.HasIndex("AuthorId");
-
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("BookCategories");
                 });
@@ -225,17 +153,7 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int>("PublisherId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("BookId", "PublisherId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("PublisherId");
 
@@ -257,18 +175,6 @@ namespace MythicalBooksAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Fantasy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Science Fiction"
-                        });
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Publisher", b =>
@@ -286,18 +192,6 @@ namespace MythicalBooksAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Publishers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Penguin Books"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "HarperCollins"
-                        });
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookAuthor", b =>
@@ -314,14 +208,6 @@ namespace MythicalBooksAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Category", null)
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("CategoryId");
-
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", null)
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("PublisherId");
-
                     b.Navigation("Author");
 
                     b.Navigation("Book");
@@ -329,10 +215,6 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookCategory", b =>
                 {
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Author", null)
-                        .WithMany("BookCategories")
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("MythicalBooksAPI.Models.Entities.Book", "Book")
                         .WithMany("BookCategories")
                         .HasForeignKey("BookId")
@@ -345,10 +227,6 @@ namespace MythicalBooksAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", null)
-                        .WithMany("BookCategories")
-                        .HasForeignKey("PublisherId");
-
                     b.Navigation("Book");
 
                     b.Navigation("Category");
@@ -356,19 +234,11 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.BookPublisher", b =>
                 {
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Author", null)
-                        .WithMany("BookPublishers")
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("MythicalBooksAPI.Models.Entities.Book", "Book")
                         .WithMany("BookPublishers")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MythicalBooksAPI.Models.Entities.Category", null)
-                        .WithMany("BookPublishers")
-                        .HasForeignKey("CategoryId");
 
                     b.HasOne("MythicalBooksAPI.Models.Entities.Publisher", "Publisher")
                         .WithMany("BookPublishers")
@@ -384,10 +254,6 @@ namespace MythicalBooksAPI.Migrations
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Author", b =>
                 {
                     b.Navigation("BookAuthors");
-
-                    b.Navigation("BookCategories");
-
-                    b.Navigation("BookPublishers");
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Book", b =>
@@ -401,19 +267,11 @@ namespace MythicalBooksAPI.Migrations
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Category", b =>
                 {
-                    b.Navigation("BookAuthors");
-
                     b.Navigation("BookCategories");
-
-                    b.Navigation("BookPublishers");
                 });
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Entities.Publisher", b =>
                 {
-                    b.Navigation("BookAuthors");
-
-                    b.Navigation("BookCategories");
-
                     b.Navigation("BookPublishers");
                 });
 #pragma warning restore 612, 618
