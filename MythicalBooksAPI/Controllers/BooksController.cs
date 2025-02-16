@@ -19,41 +19,32 @@ namespace MythicalBooksAPI.Controllers
             _context = context;
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetBooks()
+        public async Task<IActionResult> GetBooks([FromQuery] string? search)
         {
-            var books = await _context
-                .Books
-                .Include(b => b.BookAuthors)
-                    .ThenInclude(ba => ba.Author)
-                .Include(b => b.BookCategories)
-                    .ThenInclude(bc => bc.Category)
-                .Include(b => b.BookPublishers)
-                    .ThenInclude(bp => bp.Publisher)
-                .Select(b => BookMapper.ToBookDto(b))
-                .ToListAsync();
+            var query = _context
+                            .Books
+                                .Include(b => b.BookAuthors)
+                                    .ThenInclude(ba => ba.Author)
+                                .Include(b => b.BookCategories)
+                                    .ThenInclude(bc => bc.Category)
+                                .Include(b => b.BookPublishers)
+                                    .ThenInclude(bp => bp.Publisher)
+                            .AsQueryable();
 
-            return Ok(books);
-        }
-
-        [HttpGet("search/{search}")]
-        public async Task<IActionResult> GetBooks([FromRoute] string search)
-        {
-            var books = await _context
-                .Books
-                .Include(b => b.BookAuthors)
-                    .ThenInclude(ba => ba.Author)
-                .Include(b => b.BookCategories)
-                    .ThenInclude(bc => bc.Category)
-                .Include(b => b.BookPublishers)
-                    .ThenInclude(bp => bp.Publisher)
-                .Where(b => 
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(b =>
                     b.Title.Contains(search) ||
                     (b.ISBN10 ?? "").Contains(search) ||
                     (b.ISBN13 ?? "").Contains(search) ||
                     b.BookAuthors.Any(ba => ba.Author.Name.Contains(search)) ||
                     b.BookPublishers.Any(bp => bp.Publisher.Name.Contains(search))
-                    )
+                );
+            }
+
+            var books = await query
                 .Select(b => BookMapper.ToBookDto(b))
                 .ToListAsync();
 
