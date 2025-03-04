@@ -53,6 +53,7 @@ namespace MythicalBooksAPI.Mappers
                 Title = book.Title,
                 Image = book.Image,
                 Language = book.Language,
+                PhysicalFormat = book.PhysicalFormat,
                 Authors =
                     book.BookAuthors
                     .Select(ba => AuthorMapper.ToAuthorDto(ba.Author))

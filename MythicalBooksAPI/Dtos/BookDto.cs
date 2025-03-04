@@ -14,6 +14,7 @@ namespace MythicalBooksAPI.Dtos
         public required string Title { get; set; }
         public string? Image { get; set; }
         public required string Language { get; set; }
+        public string? PhysicalFormat { get; set; }
 
         public List<AuthorDto> Authors { get; set; } = new List<AuthorDto>();
     }
