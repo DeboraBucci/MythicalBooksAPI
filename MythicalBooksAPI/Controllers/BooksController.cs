@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data;
-using MythicalBooksAPI.Dtos;
 using MythicalBooksAPI.Mappers;
-using MythicalBooksAPI.Models.Entities;
 
 namespace MythicalBooksAPI.Controllers
 {

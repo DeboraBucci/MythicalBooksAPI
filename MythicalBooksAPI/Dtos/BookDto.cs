@@ -1,4 +1,4 @@
-﻿using MythicalBooksAPI.Models.Entities;
+﻿using MythicalBooksAPI.Models.Books;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 

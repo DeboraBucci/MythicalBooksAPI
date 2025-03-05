@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MythicalBooksAPI.Models.Entities;
+using MythicalBooksAPI.Models.Books;
 
 namespace MythicalBooksAPI.Data
 {

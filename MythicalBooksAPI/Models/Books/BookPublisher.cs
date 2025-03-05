@@ -1,4 +1,4 @@
-﻿namespace MythicalBooksAPI.Models.Entities
+﻿namespace MythicalBooksAPI.Models.Books
 {
     public class BookPublisher
     {

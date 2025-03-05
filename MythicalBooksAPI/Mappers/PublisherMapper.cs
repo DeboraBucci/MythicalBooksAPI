@@ -1,5 +1,5 @@
 ﻿using MythicalBooksAPI.Dtos;
-using MythicalBooksAPI.Models.Entities;
+using MythicalBooksAPI.Models.Books;
 
 namespace MythicalBooksAPI.Mappers
 {
