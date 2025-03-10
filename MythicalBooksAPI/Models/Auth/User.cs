@@ -1,8 +1,11 @@
-﻿namespace MythicalBooksAPI.Models.Auth
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MythicalBooksAPI.Models.Auth
 {
     public class User
     {
-        public int Id { get; set; }
+        [Key]
+        public Guid Id { get; set; }
         public string? Username { get; set; }
         public string Password {  get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
