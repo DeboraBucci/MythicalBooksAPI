@@ -6,10 +6,7 @@ namespace MythicalBooksAPI.Data
     public class LibraryContext : DbContext
     {
 
-        public LibraryContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
-        {
-            
-        }
+        public LibraryContext(DbContextOptions<LibraryContext> dbContextOptions) : base(dbContextOptions) { }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Authors { get; set; }
