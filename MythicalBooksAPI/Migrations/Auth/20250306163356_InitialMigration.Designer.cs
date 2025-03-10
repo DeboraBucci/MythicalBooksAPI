@@ -12,8 +12,8 @@ using MythicalBooksAPI.Data;
 namespace MythicalBooksAPI.Migrations.Auth
 {
     [DbContext(typeof(AuthContext))]
-    [Migration("20250305152440_AddUsersAndSubscriptions")]
-    partial class AddUsersAndSubscriptions
+    [Migration("20250306163356_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,23 +69,21 @@ namespace MythicalBooksAPI.Migrations.Auth
 
             modelBuilder.Entity("MythicalBooksAPI.Models.Auth.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -105,7 +103,6 @@ namespace MythicalBooksAPI.Migrations.Auth
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -137,8 +134,8 @@ namespace MythicalBooksAPI.Migrations.Auth
                     b.Property<int>("SubscriptionPlanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
