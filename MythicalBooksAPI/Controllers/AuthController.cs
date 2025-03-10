@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using MythicalBooksAPI.Data;
 using MythicalBooksAPI.Models.Auth;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using MythicalBooksAPI.Dtos;
 using MythicalBooksAPI.Mappers;
+using MythicalBooksAPI.Helpers;
+using System.Text.RegularExpressions;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -24,6 +22,20 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto request)
         {
+            if (request.Name.Trim().Length == 0 
+                || request.Surname.Trim().Length == 0 
+                || request.Email.Trim().Length == 0 
+                || request.Password.Trim().Length == 0 
+                || request.Country.Trim().Length == 0)
+            {
+                return BadRequest("Incomplete credentials, please try again");
+            }
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+
+            if (!Regex.IsMatch(request.Email, emailPattern))
+            {
+                return BadRequest("Invalid email format");
+            }
 
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
             {
@@ -32,7 +44,7 @@ namespace MythicalBooksAPI.Controllers
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            User user = UserMapper.ToUser(request, hashedPassword);
+            User user = request.ToUser(hashedPassword);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
