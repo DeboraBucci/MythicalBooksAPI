@@ -21,5 +21,23 @@ namespace MythicalBooksAPI.Mappers
                 PostalCode = request.PostalCode
             };
         }
+
+        public static UserDto UserToUserDto(this User user)
+        {
+            return new UserDto
+            {
+                Username = user.Username,
+                Email = user.Email,
+                DateOfBirth = user.DateOfBirth,
+                Name = user.Name,
+                Surname = user.Surname,
+                Address = user.Address,
+                Country = user.Country,
+                City = user.City,
+                PostalCode = user.PostalCode,
+                ActiveSubscription = user.HasActiveSubscription ? user.UserSubscriptions.LastOrDefault() : null,
+            };
+        }
     }
 }
+
