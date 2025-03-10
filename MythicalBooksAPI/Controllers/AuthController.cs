@@ -51,5 +51,20 @@ namespace MythicalBooksAPI.Controllers
 
             return Ok(new { message = "User registered successfully!" });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUser([FromBody] AuthRequest request)
+        {
+            User? userFound = await _context.Users.FirstOrDefaultAsync(
+                (user) => user.Email == request.Email);
+
+            if (userFound != null && BCrypt.Net.BCrypt.Verify(request.Password, userFound.Password)) 
+            {
+                return Ok(new { message = "Success!", token = TokenHelper.GenerateToken(userFound.Id)}); 
+            }
+
+            return BadRequest(new { message = "Wrong credentials, please try again!" });
+        }
+
     }
 }
