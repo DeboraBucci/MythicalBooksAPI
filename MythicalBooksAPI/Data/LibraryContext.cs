@@ -19,7 +19,6 @@ namespace MythicalBooksAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             // Many-to-Many: Book - Author
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
@@ -62,6 +61,5 @@ namespace MythicalBooksAPI.Data
                 .WithMany(p => p.BookPublishers)
                 .HasForeignKey(bp => bp.PublisherId);
         }
-
     }
 }

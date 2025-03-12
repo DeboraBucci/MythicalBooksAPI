@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data;
 using MythicalBooksAPI.Mappers;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -24,10 +25,6 @@ namespace MythicalBooksAPI.Controllers
                             .Books
                                 .Include(b => b.BookAuthors)
                                     .ThenInclude(ba => ba.Author)
-                                .Include(b => b.BookCategories)
-                                    .ThenInclude(bc => bc.Category)
-                                .Include(b => b.BookPublishers)
-                                    .ThenInclude(bp => bp.Publisher)
                             .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
@@ -73,6 +70,29 @@ namespace MythicalBooksAPI.Controllers
             try
             {
                 return Ok(await _context.Categories.ToListAsync());
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("categories/{id}")]
+        public async Task<IActionResult> GetCategoryBooks([FromRoute] int id)
+        {
+            try
+            {
+                var categoryBooks =
+                     await _context
+                    .Books
+                    .Include(b => b.BookAuthors)
+                        .ThenInclude(ba => ba.Author)
+                    .Where(b => b.BookCategories.Any(bc => bc.CategoryId == id))
+                    .Select(b => BookMapper.ToBookDto(b))
+                    .ToListAsync();
+
+                return Ok(categoryBooks);
             }
 
             catch (Exception ex)
