@@ -66,5 +66,19 @@ namespace MythicalBooksAPI.Controllers
 
             return Ok(book.ToBookDetailDto());
         }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                return Ok(await _context.Categories.ToListAsync());
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
