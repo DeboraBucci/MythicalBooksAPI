@@ -19,13 +19,27 @@ namespace MythicalBooksAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetBooks([FromQuery] string? search)
+        public async Task<IActionResult> GetBooks(
+            [FromQuery] string? search,
+            [FromQuery] List<int> categories,
+            [FromQuery] int page = 1, 
+            [FromQuery] int pageSize = 2)
         {
             var query = _context
-                            .Books
-                                .Include(b => b.BookAuthors)
-                                    .ThenInclude(ba => ba.Author)
-                            .AsQueryable();
+                        .Books
+                        .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+                        .AsQueryable();
+
+            if (categories != null && categories.Any())
+            {
+                query = query.Where(
+                    b => categories.All(
+                        cid => b.BookCategories.Any(
+                            bc => bc.CategoryId == cid
+                            )
+                        )
+                    );
+            }
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -38,11 +52,27 @@ namespace MythicalBooksAPI.Controllers
                 );
             }
 
+            int totalItems = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
             var books = await query
+                .OrderBy(b => b.Id) // Important: apply OrderBy before Skip/Take
+                .Skip((page - 1) * (pageSize))
+                .Take(pageSize)
                 .Select(b => BookMapper.ToBookDto(b))
                 .ToListAsync();
 
-            return Ok(books);
+            var response = new
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                Data = books
+            };
+
+            return Ok(response);
+
         }
 
         [HttpGet("{id}")]
@@ -64,6 +94,29 @@ namespace MythicalBooksAPI.Controllers
             return Ok(book.ToBookDetailDto());
         }
 
+        [HttpGet("books-ids")]
+        public async Task<IActionResult> GetBooksByIds([FromQuery] List<int> ids)
+        {
+            var books = await _context.Books
+            .AsNoTracking()
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Include(b => b.BookPublishers).ThenInclude(bp => bp.Publisher)
+            .Where(b => ids.Contains(b.Id))
+            .ToListAsync();
+
+
+            if (!books.Any())
+            {
+                return NotFound();
+            }
+
+            var bookDtos = books.Select(b => b.ToBookDto());
+
+            return Ok(bookDtos);
+        }
+
+
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories()
         {
@@ -78,8 +131,8 @@ namespace MythicalBooksAPI.Controllers
             }
         }
 
-        [HttpGet("categories/{id}")]
-        public async Task<IActionResult> GetCategoryBooks([FromRoute] int id)
+        [HttpGet("categories-books")]
+        public async Task<IActionResult> GetCategoryBooks([FromQuery] List<int> ids)
         {
             try
             {
@@ -88,7 +141,7 @@ namespace MythicalBooksAPI.Controllers
                     .Books
                     .Include(b => b.BookAuthors)
                         .ThenInclude(ba => ba.Author)
-                    .Where(b => b.BookCategories.Any(bc => bc.CategoryId == id))
+                    .Where(b => ids.All(id => b.BookCategories.Any(bc => bc.CategoryId == id)))
                     .Select(b => BookMapper.ToBookDto(b))
                     .ToListAsync();
 
