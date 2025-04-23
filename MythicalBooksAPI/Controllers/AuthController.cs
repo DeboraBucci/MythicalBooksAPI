@@ -8,15 +8,17 @@ using MythicalBooksAPI.Helpers;
 using System.Text.RegularExpressions;
 
 namespace MythicalBooksAPI.Controllers
-{
+{  
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly AuthContext _context;
+        private readonly TokenHelper _tokenHelper;
 
-        public AuthController(AuthContext context) {
-            _context = context; 
+        public AuthController(AuthContext context, TokenHelper tokenHelper) {
+            _context = context;
+            _tokenHelper = tokenHelper;
         }
 
         [HttpPost("register")]
@@ -30,7 +32,8 @@ namespace MythicalBooksAPI.Controllers
             {
                 return BadRequest("Incomplete credentials, please try again");
             }
-                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            
+            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
             if (!Regex.IsMatch(request.Email, emailPattern))
             {
@@ -60,7 +63,8 @@ namespace MythicalBooksAPI.Controllers
 
             if (userFound != null && BCrypt.Net.BCrypt.Verify(request.Password, userFound.Password)) 
             {
-                return Ok(new { message = "Success!", token = TokenHelper.GenerateToken(userFound.Id)}); 
+                var token = _tokenHelper.GenerateToken(userFound.Id);
+                return Ok(new { message = "Success!", token }); 
             }
 
             return BadRequest(new { message = "Wrong credentials, please try again!" });
