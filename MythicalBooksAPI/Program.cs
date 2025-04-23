@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data;
+using MythicalBooksAPI.Models.Auth;
+using MythicalBooksAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,10 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// JWT config
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.AddScoped<TokenHelper>();
 
 var app = builder.Build();
 
