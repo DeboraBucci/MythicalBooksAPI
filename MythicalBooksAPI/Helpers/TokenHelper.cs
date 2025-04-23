@@ -1,31 +1,40 @@
-﻿namespace MythicalBooksAPI.Helpers
+﻿using Microsoft.Extensions.Options;
+using MythicalBooksAPI.Models.Auth;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+namespace MythicalBooksAPI.Helpers
 {
-    public static class TokenHelper
+    public class TokenHelper
     {
-        private static readonly TimeSpan TokenLifeTime = TimeSpan.FromDays(1);
+        private readonly JwtSettings _jwtSettings;
 
-        public static string GenerateToken(Guid userId )
+        public TokenHelper(IOptions<JwtSettings> jwtSettings)
         {
-            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
-            byte[] key = userId.ToByteArray();
-            string token = Convert.ToBase64String(time.Concat(key).ToArray());
-
-            return token;
+            _jwtSettings = jwtSettings.Value;
         }
 
-        public static bool IsTokenExpired (string token)
+        public string GenerateToken(Guid userId)
         {
-            try
+            var claims = new[]
             {
-                byte[] data = Convert.FromBase64String(token);
-                DateTime tokenDate = DateTime.FromBinary(BitConverter.ToInt64(data, 0));
-                return DateTime.UtcNow - tokenDate > TokenLifeTime;
-            }
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
-            catch
-            {
-                return true;
-            }
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
