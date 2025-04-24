@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MythicalBooksAPI.Data;
 using MythicalBooksAPI.Models.Auth;
 using MythicalBooksAPI.Dtos;
 using MythicalBooksAPI.Mappers;
 using MythicalBooksAPI.Helpers;
 using System.Text.RegularExpressions;
+using MythicalBooksAPI.Data.Contexts;
 
 namespace MythicalBooksAPI.Controllers
-{  
+{
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -24,6 +24,7 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto request)
         {
+            // TODO: move validations to functions
             if (request.Name.Trim().Length == 0 
                 || request.Surname.Trim().Length == 0 
                 || request.Email.Trim().Length == 0 
@@ -45,6 +46,7 @@ namespace MythicalBooksAPI.Controllers
                 return BadRequest(new { message = "Unable to register user, please try again later." });
             }
 
+            // TODO: BCrypt -> ARGON2ID
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             User user = request.ToUser(hashedPassword);
@@ -58,6 +60,8 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] AuthRequest request)
         {
+            // TODO: Validate email
+
             User? userFound = await _context.Users.FirstOrDefaultAsync(
                 (user) => user.Email == request.Email);
 
@@ -69,6 +73,7 @@ namespace MythicalBooksAPI.Controllers
 
             return BadRequest(new { message = "Wrong credentials, please try again!" });
         }
+
 
     }
 }

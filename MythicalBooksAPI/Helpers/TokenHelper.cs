@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using MythicalBooksAPI.Models.Auth;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;

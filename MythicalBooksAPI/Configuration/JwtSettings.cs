@@ -1,4 +1,4 @@
-﻿namespace MythicalBooksAPI.Models.Auth
+﻿namespace MythicalBooksAPI.Helpers
 {
     public class JwtSettings
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Models.Books;
 
-namespace MythicalBooksAPI.Data
+namespace MythicalBooksAPI.Data.Contexts
 {
     public class LibraryContext : DbContext
     {

@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MythicalBooksAPI.Data;
+using MythicalBooksAPI.Data.Contexts;
 
 #nullable disable
 
 namespace MythicalBooksAPI.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250213205810_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250214001425_UpdateBookModel")]
+    partial class UpdateBookModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,11 +68,9 @@ namespace MythicalBooksAPI.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ISBN10")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ISBN13")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")

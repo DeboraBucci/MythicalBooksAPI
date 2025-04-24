@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MythicalBooksAPI.Data;
+using MythicalBooksAPI.Data.Contexts;
 
 #nullable disable
 
 namespace MythicalBooksAPI.Migrations.Auth
 {
     [DbContext(typeof(AuthContext))]
-    [Migration("20250306163356_InitialMigration")]
-    partial class InitialMigration
+    partial class AuthContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

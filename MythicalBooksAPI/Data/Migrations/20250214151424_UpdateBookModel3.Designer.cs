@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MythicalBooksAPI.Data;
+using MythicalBooksAPI.Data.Contexts;
 
 #nullable disable
 
 namespace MythicalBooksAPI.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250214002455_UpdateBookModel2")]
-    partial class UpdateBookModel2
+    [Migration("20250214151424_UpdateBookModel3")]
+    partial class UpdateBookModel3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,8 +62,10 @@ namespace MythicalBooksAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double?>("AverageRating")
+                        .HasColumnType("float");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -84,7 +86,6 @@ namespace MythicalBooksAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PhysicalFormat")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
@@ -93,10 +94,7 @@ namespace MythicalBooksAPI.Migrations
                     b.Property<int?>("PublishedYear")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("Ratings")
+                    b.Property<int?>("RatingCount")
                         .HasColumnType("int");
 
                     b.Property<int?>("Stock")
