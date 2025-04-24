@@ -20,12 +20,12 @@ namespace MythicalBooksAPI.Helpers
 
         public static bool HasMinLength(string input, int minLength)
         {
-            return input?.Length >= minLength;
+            return input?.Trim().Length >= minLength;
         }
 
         public static bool HasMaxLength(string input, int maxLength)
         {
-            return input?.Length <= maxLength;
+            return input?.Trim().Length <= maxLength;
         }
     }
 }
