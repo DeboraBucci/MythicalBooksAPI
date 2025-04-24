@@ -22,34 +22,34 @@ namespace MythicalBooksAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto request)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
             // TODO: move validations to functions
-            if (request.Name.Trim().Length == 0 
-                || request.Surname.Trim().Length == 0 
-                || request.Email.Trim().Length == 0 
-                || request.Password.Trim().Length == 0 
-                || request.Country.Trim().Length == 0)
+            if (registerUserDto.Name.Trim().Length == 0 
+                || registerUserDto.Surname.Trim().Length == 0 
+                || registerUserDto.Email.Trim().Length == 0 
+                || registerUserDto.Password.Trim().Length == 0 
+                || registerUserDto.Country.Trim().Length == 0)
             {
                 return BadRequest("Incomplete credentials, please try again");
             }
             
             string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
-            if (!Regex.IsMatch(request.Email, emailPattern))
+            if (!Regex.IsMatch(registerUserDto.Email, emailPattern))
             {
                 return BadRequest("Invalid email format");
             }
 
-            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == registerUserDto.Email))
             {
                 return BadRequest(new { message = "Unable to register user, please try again later." });
             }
 
             // TODO: BCrypt -> ARGON2ID
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerUserDto.Password);
 
-            User user = request.ToUser(hashedPassword);
+            User user = registerUserDto.ToUser(hashedPassword);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -58,14 +58,14 @@ namespace MythicalBooksAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginUser([FromBody] AuthRequest request)
+        public async Task<IActionResult> LoginUser([FromBody] LoginUserDto loginUserDto)
         {
             // TODO: Validate email
 
             User? userFound = await _context.Users.FirstOrDefaultAsync(
-                (user) => user.Email == request.Email);
+                (user) => user.Email == loginUserDto.Email);
 
-            if (userFound != null && BCrypt.Net.BCrypt.Verify(request.Password, userFound.Password)) 
+            if (userFound != null && BCrypt.Net.BCrypt.Verify(loginUserDto.Password, userFound.Password)) 
             {
                 var token = _tokenHelper.GenerateToken(userFound.Id);
                 return Ok(new { message = "Success!", token }); 
@@ -73,7 +73,5 @@ namespace MythicalBooksAPI.Controllers
 
             return BadRequest(new { message = "Wrong credentials, please try again!" });
         }
-
-
     }
 }
