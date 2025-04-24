@@ -34,9 +34,8 @@ namespace MythicalBooksAPI.Controllers
                 return BadRequest("Incomplete credentials, please try again");
             }
             
-            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
-            if (!Regex.IsMatch(registerUserDto.Email, emailPattern))
+            if (!ValidationHelper.IsValidEmail(registerUserDto.Email))
             {
                 return BadRequest("Invalid email format");
             }
