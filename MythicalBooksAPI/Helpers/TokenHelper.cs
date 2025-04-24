@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MythicalBooksAPI.Configuration;
 
 namespace MythicalBooksAPI.Helpers
 {

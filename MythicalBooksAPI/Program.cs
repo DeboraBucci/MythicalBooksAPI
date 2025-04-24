@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using MythicalBooksAPI.Models.Auth;
 using MythicalBooksAPI.Helpers;
 using MythicalBooksAPI.Data.Contexts;
+using MythicalBooksAPI.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

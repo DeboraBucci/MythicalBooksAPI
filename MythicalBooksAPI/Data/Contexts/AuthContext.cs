@@ -2,9 +2,9 @@
 using MythicalBooksAPI.Models.Auth;
 using MythicalBooksAPI.Models.Books;
 
-namespace MythicalBooksAPI.Data
+namespace MythicalBooksAPI.Data.Contexts
 {
-    public class AuthContext: DbContext
+    public class AuthContext : DbContext
     {
         public AuthContext(DbContextOptions<AuthContext> options) : base(options)
         {

@@ -1,4 +1,4 @@
-﻿using MythicalBooksAPI.Dtos;
+﻿using MythicalBooksAPI.Dtos.Books;
 using MythicalBooksAPI.Models.Books;
 
 namespace MythicalBooksAPI.Mappers

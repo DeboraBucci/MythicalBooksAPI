@@ -1,4 +1,4 @@
-﻿namespace MythicalBooksAPI.Dtos
+﻿namespace MythicalBooksAPI.Dtos.Books
 {
     public class BookDetailDto
     {

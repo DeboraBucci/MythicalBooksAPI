@@ -1,6 +1,6 @@
 ﻿using MythicalBooksAPI.Models.Auth;
 
-namespace MythicalBooksAPI.Dtos
+namespace MythicalBooksAPI.Dtos.Auth
 {
     public class UserDto
     {
@@ -14,7 +14,7 @@ namespace MythicalBooksAPI.Dtos
         public string? City { get; set; }
         public int? PostalCode { get; set; }
 
-        public UserSubscription? ActiveSubscription {get; set;}
+        public UserSubscription? ActiveSubscription { get; set; }
 
     }
 }

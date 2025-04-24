@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Models.Auth;
-using MythicalBooksAPI.Dtos;
 using MythicalBooksAPI.Mappers;
 using MythicalBooksAPI.Helpers;
 using System.Text.RegularExpressions;
 using MythicalBooksAPI.Data.Contexts;
+using MythicalBooksAPI.Dtos.Auth;
 
 namespace MythicalBooksAPI.Controllers
 {

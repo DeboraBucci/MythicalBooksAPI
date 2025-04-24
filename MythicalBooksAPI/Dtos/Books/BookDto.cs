@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MythicalBooksAPI.Dtos
+namespace MythicalBooksAPI.Dtos.Books
 {
     public class BookDto
     {

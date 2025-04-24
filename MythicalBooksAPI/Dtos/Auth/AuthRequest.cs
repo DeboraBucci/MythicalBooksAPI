@@ -1,4 +1,4 @@
-﻿namespace MythicalBooksAPI.Dtos
+﻿namespace MythicalBooksAPI.Dtos.Auth
 {
     public class AuthRequest
     {
