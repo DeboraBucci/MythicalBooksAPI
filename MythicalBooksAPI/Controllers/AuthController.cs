@@ -6,6 +6,7 @@ using MythicalBooksAPI.Helpers;
 using System.Text.RegularExpressions;
 using MythicalBooksAPI.Data.Contexts;
 using MythicalBooksAPI.Dtos.Auth;
+using MythicalBooksAPI.Helpers.Validators;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -24,21 +25,8 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
-            // TODO: move validations to functions
-            if (registerUserDto.Name.Trim().Length == 0 
-                || registerUserDto.Surname.Trim().Length == 0 
-                || registerUserDto.Email.Trim().Length == 0 
-                || registerUserDto.Password.Trim().Length == 0 
-                || registerUserDto.Country.Trim().Length == 0)
-            {
-                return BadRequest("Incomplete credentials, please try again");
-            }
-            
-
-            if (!ValidationHelper.IsValidEmail(registerUserDto.Email))
-            {
-                return BadRequest("Invalid email format");
-            }
+            ValidationResult validation = AuthValidator.ValidateRegister(registerUserDto);
+            if (!validation.IsValid) return BadRequest(validation.ErrorResponse);
 
             if (await _context.Users.AnyAsync(u => u.Email == registerUserDto.Email))
             {
