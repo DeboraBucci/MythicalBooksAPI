@@ -20,6 +20,9 @@ namespace MythicalBooksAPI.Repositories
         public void AddUser(User user)
             => _context.Users.Add(user);
 
+        public Task<User?> GetUserAsync(string email)
+            => _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
         public Task SaveChangesAsync()
             => _context.SaveChangesAsync();
     }

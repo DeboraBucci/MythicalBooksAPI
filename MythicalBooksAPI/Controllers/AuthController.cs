@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MythicalBooksAPI.Models.Auth;
-using MythicalBooksAPI.Mappers;
-using MythicalBooksAPI.Helpers;
-using System.Text.RegularExpressions;
-using MythicalBooksAPI.Data.Contexts;
 using MythicalBooksAPI.Dtos.Auth;
 using MythicalBooksAPI.Helpers.Validators;
-using MythicalBooksAPI.Services;
+using MythicalBooksAPI.Interfaces.Services;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -15,20 +9,16 @@ namespace MythicalBooksAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
-        private readonly AuthContext _context;
-        private readonly TokenHelper _tokenHelper;
+        private readonly IAuthService _authService;
 
-        public AuthController(AuthService authService, AuthContext context, TokenHelper tokenHelper) {
+        public AuthController(IAuthService authService) {
             _authService = authService;
-            _context = context;
-            _tokenHelper = tokenHelper;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
-            var result = await _authService.RegisterUserAsync(registerUserDto);
+            ValidationResult result = await _authService.RegisterUserAsync(registerUserDto);
 
             if (!result.IsValid) return BadRequest(result.ErrorResponse);
 
@@ -38,20 +28,11 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginUserDto loginUserDto)
         {
-            ValidationResult validation = AuthValidator.ValidateLogin(loginUserDto);
+            AuthResponse? result = await _authService.LoginUserAsync(loginUserDto);
 
-            if (!validation.IsValid) return BadRequest(validation.ErrorResponse);
-          
-            User? userFound = await _context.Users.FirstOrDefaultAsync(
-                (user) => user.Email == loginUserDto.Email);
+            if (result == null) return BadRequest("Couldn't log in, try again!");
 
-            if (userFound != null && BCrypt.Net.BCrypt.Verify(loginUserDto.Password, userFound.Password)) 
-            {
-                var token = _tokenHelper.GenerateToken(userFound.Id);
-                return Ok(new { message = "Success!", token }); 
-            }
-
-            return BadRequest(new { message = "Wrong credentials, please try again!" });
+            return Ok(result);
         }
     }
 }

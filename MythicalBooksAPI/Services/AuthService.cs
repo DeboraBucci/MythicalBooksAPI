@@ -1,21 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Dtos.Auth;
+using MythicalBooksAPI.Helpers;
 using MythicalBooksAPI.Helpers.Validators;
 using MythicalBooksAPI.Interfaces.Repositories;
 using MythicalBooksAPI.Interfaces.Services;
 using MythicalBooksAPI.Mappers;
 using MythicalBooksAPI.Models.Auth;
 using MythicalBooksAPI.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace MythicalBooksAPI.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly TokenHelper _tokenHelper;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, TokenHelper tokenHelper)
         {
             _userRepository = userRepository;
+            _tokenHelper = tokenHelper;
         }
 
         public async Task<ValidationResult> RegisterUserAsync(RegisterUserDto userDto)
@@ -35,6 +39,23 @@ namespace MythicalBooksAPI.Services
             await _userRepository.SaveChangesAsync();
 
             return ValidationResult.Success();
+        }
+
+        public async Task<AuthResponse?> LoginUserAsync(LoginUserDto userDto)
+        {
+            ValidationResult validation = AuthValidator.ValidateLogin(userDto);
+
+            if (!validation.IsValid) return null;
+
+            User? user = await _userRepository.GetUserAsync(userDto.Email);
+
+            if(user != null && BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
+            {
+                var token = _tokenHelper.GenerateToken(user.Id);
+                return new AuthResponse(token, "User logged successfully!");
+            }
+
+            return null;
         }
     }
 }

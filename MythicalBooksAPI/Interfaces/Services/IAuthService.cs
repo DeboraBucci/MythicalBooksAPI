@@ -6,5 +6,6 @@ namespace MythicalBooksAPI.Interfaces.Services
     public interface IAuthService
     {
         Task<ValidationResult> RegisterUserAsync(RegisterUserDto userDto);
+        Task<AuthResponse?> LoginUserAsync(LoginUserDto userDto);
     }
 }
