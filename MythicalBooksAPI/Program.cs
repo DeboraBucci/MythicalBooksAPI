@@ -2,11 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Helpers;
 using MythicalBooksAPI.Data.Contexts;
 using MythicalBooksAPI.Configuration;
+using MythicalBooksAPI.Repositories;
+using MythicalBooksAPI.Services;
+using MythicalBooksAPI.Interfaces.Services;
+using MythicalBooksAPI.Interfaces.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.WriteIndented = true;
