@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using MythicalBooksAPI.Data.Contexts;
 using MythicalBooksAPI.Dtos.Auth;
 using MythicalBooksAPI.Helpers.Validators;
+using MythicalBooksAPI.Services;
 
 namespace MythicalBooksAPI.Controllers
 {
@@ -14,10 +15,12 @@ namespace MythicalBooksAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly AuthService _authService;
         private readonly AuthContext _context;
         private readonly TokenHelper _tokenHelper;
 
-        public AuthController(AuthContext context, TokenHelper tokenHelper) {
+        public AuthController(AuthService authService, AuthContext context, TokenHelper tokenHelper) {
+            _authService = authService;
             _context = context;
             _tokenHelper = tokenHelper;
         }
@@ -25,23 +28,9 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
-            // VALIDATION
-            ValidationResult validation = AuthValidator.ValidateRegister(registerUserDto);
-            if (!validation.IsValid) return BadRequest(validation.ErrorResponse);
+            var result = await _authService.RegisterUserAsync(registerUserDto);
 
-            // REPEATED EMAIL
-            if (await _context.Users.AnyAsync(u => u.Email == registerUserDto.Email))
-            {
-                return BadRequest(new { message = "Unable to register user, please try again later." });
-            }
-
-            // TODO: BCrypt -> ARGON2ID
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerUserDto.Password);
-
-            User user = registerUserDto.ToUser(hashedPassword);
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (!result.IsValid) return BadRequest(result.ErrorResponse);
 
             return Ok(new { message = "User registered successfully!" });
         }
