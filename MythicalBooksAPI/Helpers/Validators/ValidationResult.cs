@@ -3,9 +3,10 @@
     public class ValidationResult
     {
         public bool IsValid { get; set; } = true;
-        public object? ErrorResponse { get; set; } = null;
+
+        public ValidationError? ErrorResponse { get; set; } = null;
 
         public static ValidationResult Success() => new();
-        public static ValidationResult Fail(object error) => new () { IsValid = false, ErrorResponse = error };
+        public static ValidationResult Fail(ValidationError error) => new () { IsValid = false, ErrorResponse = error };
     }
 }

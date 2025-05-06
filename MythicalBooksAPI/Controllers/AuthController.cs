@@ -25,9 +25,11 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
+            // VALIDATION
             ValidationResult validation = AuthValidator.ValidateRegister(registerUserDto);
             if (!validation.IsValid) return BadRequest(validation.ErrorResponse);
 
+            // REPEATED EMAIL
             if (await _context.Users.AnyAsync(u => u.Email == registerUserDto.Email))
             {
                 return BadRequest(new { message = "Unable to register user, please try again later." });

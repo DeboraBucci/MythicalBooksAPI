@@ -19,11 +19,7 @@ namespace MythicalBooksAPI.Helpers.Validators
             if (missingFields.Count > 0)
             {
                 return ValidationResult.Fail(
-                    new
-                    {
-                        message = "Missing required fields",
-                        fields = missingFields
-                    });
+                    new ValidationError("Missing required fields", missingFields));
             }
 
             // Check Field Length Too Long
@@ -47,11 +43,8 @@ namespace MythicalBooksAPI.Helpers.Validators
 
             if (fieldsTooLong.Count > 0)
             {
-                return ValidationResult.Fail(new
-                {
-                    message = "Some fields have too long lengths",
-                    fields = fieldsTooLong
-                });
+                return ValidationResult.Fail(
+                    new ValidationError("Some fields have too long lengths", fieldsTooLong));
             }
 
             // Check Field Length Too Short
@@ -74,21 +67,78 @@ namespace MythicalBooksAPI.Helpers.Validators
 
             if (fieldsTooShort.Count > 0)
             {
-                return ValidationResult.Fail(new
-                {
-                    message = "Some fields have too short lengths",
-                    fields = fieldsTooShort
-                });
+                return ValidationResult.Fail(
+                    new ValidationError("Some fields have too short lengths", fieldsTooShort));
             }
 
             // Check Format
             if (!ValidationHelper.IsValidEmail(registerUserDto.Email))
             {
-                return ValidationResult.Fail("Invalid email format");
+                return ValidationResult.Fail(
+                    new ValidationError("Invalid email format"));
             }
 
             return ValidationResult.Success();
         }
 
+
+        public static ValidationResult ValidateLogin(LoginUserDto loginUserDto)
+        {
+            // Check Empty Fields
+            List<string> missingFields = new List<string>();
+
+            if (!ValidationHelper.IsNotEmpty(loginUserDto.Email)) missingFields.Add("Email");
+            if (!ValidationHelper.IsNotEmpty(loginUserDto.Password)) missingFields.Add("Password");
+
+            if (missingFields.Count > 0)
+            {
+                return ValidationResult.Fail(
+                    new ValidationError("Missing required fields", missingFields)
+                    );
+            }
+
+            // Check Field Length Too Long
+            List<string> fieldsTooLong = new List<string>();
+
+            if (!ValidationHelper.HasMaxLength(loginUserDto.Email, 254))
+                fieldsTooLong.Add("Email");
+
+            if (!ValidationHelper.HasMaxLength(loginUserDto.Password, 128))
+                fieldsTooLong.Add("Password");
+
+
+            if (fieldsTooLong.Count > 0)
+            {
+                return
+                    ValidationResult.Fail(
+                    new ValidationError("Some fields have too long lengths", fieldsTooLong)
+                    );
+            }
+
+            // Check Field Length Too Short
+            List<string> fieldsTooShort = new List<string>();
+
+            if (!ValidationHelper.HasMinLength(loginUserDto.Email, 5))
+                fieldsTooShort.Add("Email");
+
+            if (!ValidationHelper.HasMinLength(loginUserDto.Password, 8))
+                fieldsTooShort.Add("Password");
+
+            if (fieldsTooShort.Count > 0)
+            {
+                return
+                    ValidationResult.Fail(
+                    new ValidationError("Some fields have too short lengths", fieldsTooShort)
+                    );
+            }
+
+            // Check Format
+            if (!ValidationHelper.IsValidEmail(loginUserDto.Email))
+            {
+                return ValidationResult.Fail(new ValidationError("Invalid email format"));
+            }
+
+            return ValidationResult.Success();
+        }
     }
 }
