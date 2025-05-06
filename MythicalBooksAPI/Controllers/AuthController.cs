@@ -49,11 +49,10 @@ namespace MythicalBooksAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginUserDto loginUserDto)
         {
-            if (!ValidationHelper.IsValidEmail(loginUserDto.Email))
-            {
-                return BadRequest("Invalid email format");
-            }
+            ValidationResult validation = AuthValidator.ValidateLogin(loginUserDto);
 
+            if (!validation.IsValid) return BadRequest(validation.ErrorResponse);
+          
             User? userFound = await _context.Users.FirstOrDefaultAsync(
                 (user) => user.Email == loginUserDto.Email);
 
