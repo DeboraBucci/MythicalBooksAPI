@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data.Contexts;
+using MythicalBooksAPI.Dtos;
+using MythicalBooksAPI.Dtos.Books;
+using MythicalBooksAPI.Interfaces.Services;
 using MythicalBooksAPI.Mappers;
+using MythicalBooksAPI.Services;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MythicalBooksAPI.Controllers
@@ -10,11 +14,13 @@ namespace MythicalBooksAPI.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly IBookService _bookService;
         private readonly LibraryContext _context;
 
-        public BooksController(LibraryContext context)
+        public BooksController(LibraryContext context, IBookService bookService)
         {
             _context = context;
+            _bookService = bookService;
         }
 
 
@@ -25,133 +31,39 @@ namespace MythicalBooksAPI.Controllers
             [FromQuery] int page = 1, 
             [FromQuery] int pageSize = 2)
         {
-            var query = _context
-                        .Books
-                        .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-                        .AsQueryable();
+            var response = await _bookService.GetBooksAsync(search, categories, page, pageSize);
 
-            if (categories != null && categories.Any())
-            {
-                query = query.Where(
-                    b => categories.All(
-                        cid => b.BookCategories.Any(
-                            bc => bc.CategoryId == cid
-                            )
-                        )
-                    );
-            }
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(b =>
-                    b.Title.Contains(search) ||
-                    (b.ISBN10 ?? "").Contains(search) ||
-                    (b.ISBN13 ?? "").Contains(search) ||
-                    b.BookAuthors.Any(ba => ba.Author.Name.Contains(search)) ||
-                    b.BookPublishers.Any(bp => bp.Publisher.Name.Contains(search))
-                );
-            }
-
-            int totalItems = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-            var books = await query
-                .OrderBy(b => b.Id) // Important: apply OrderBy before Skip/Take
-                .Skip((page - 1) * (pageSize))
-                .Take(pageSize)
-                .Select(b => BookMapper.ToBookDto(b))
-                .ToListAsync();
-
-            var response = new
-            {
-                Page = page,
-                PageSize = pageSize,
-                TotalItems = totalItems,
-                TotalPages = totalPages,
-                Data = books
-            };
+            if (response == null)
+                return NotFound("No books found.");
 
             return Ok(response);
 
         }
 
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById([FromRoute] int id)
         {
-            var book = await _context.Books
-            .AsNoTracking() // Optimizes performance
-            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
-            .Include(b => b.BookPublishers).ThenInclude(bp => bp.Publisher)
-            .Where(b => b.Id == id)
-            .FirstOrDefaultAsync();
+            var book = await _bookService.GetBookByIdAsync(id);
 
             if (book == null)
             {
-                return NotFound();
+                return NotFound("There is no book with such id");
             }
 
-            return Ok(book.ToBookDetailDto());
-        }
-
-        [HttpGet("books-ids")]
-        public async Task<IActionResult> GetBooksByIds([FromQuery] List<int> ids)
-        {
-            var books = await _context.Books
-            .AsNoTracking()
-            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
-            .Include(b => b.BookPublishers).ThenInclude(bp => bp.Publisher)
-            .Where(b => ids.Contains(b.Id))
-            .ToListAsync();
-
-
-            if (!books.Any())
-            {
-                return NotFound();
-            }
-
-            var bookDtos = books.Select(b => b.ToBookDto());
-
-            return Ok(bookDtos);
+            return Ok(book);
         }
 
 
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories()
         {
-            try
-            {
-                return Ok(await _context.Categories.ToListAsync());
-            }
+            var categories = await _bookService.GetAllCategoriesAsync();
 
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            if (categories == null)
+                return BadRequest("No categories found");
 
-        [HttpGet("categories-books")]
-        public async Task<IActionResult> GetCategoryBooks([FromQuery] List<int> ids)
-        {
-            try
-            {
-                var categoryBooks =
-                     await _context
-                    .Books
-                    .Include(b => b.BookAuthors)
-                        .ThenInclude(ba => ba.Author)
-                    .Where(b => ids.All(id => b.BookCategories.Any(bc => bc.CategoryId == id)))
-                    .Select(b => BookMapper.ToBookDto(b))
-                    .ToListAsync();
-
-                return Ok(categoryBooks);
-            }
-
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(categories);
         }
     }
 }
