@@ -15,11 +15,9 @@ namespace MythicalBooksAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        private readonly LibraryContext _context;
 
-        public BooksController(LibraryContext context, IBookService bookService)
+        public BooksController(IBookService bookService)
         {
-            _context = context;
             _bookService = bookService;
         }
 
