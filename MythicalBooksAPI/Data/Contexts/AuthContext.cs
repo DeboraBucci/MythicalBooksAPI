@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Models.Auth;
 using MythicalBooksAPI.Models.Books;
+using MythicalBooksAPI.Models.User;
 
 namespace MythicalBooksAPI.Data.Contexts
 {

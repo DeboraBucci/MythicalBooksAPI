@@ -5,7 +5,7 @@ using MythicalBooksAPI.Helpers.Validators;
 using MythicalBooksAPI.Interfaces.Repositories;
 using MythicalBooksAPI.Interfaces.Services;
 using MythicalBooksAPI.Mappers;
-using MythicalBooksAPI.Models.Auth;
+using MythicalBooksAPI.Models.User;
 using MythicalBooksAPI.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 

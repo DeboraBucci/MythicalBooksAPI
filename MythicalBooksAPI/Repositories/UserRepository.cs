@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MythicalBooksAPI.Data.Contexts;
 using MythicalBooksAPI.Interfaces.Repositories;
-using MythicalBooksAPI.Models.Auth;
+using MythicalBooksAPI.Models.User;
 
 namespace MythicalBooksAPI.Repositories
 {

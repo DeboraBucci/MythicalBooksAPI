@@ -1,4 +1,4 @@
-﻿using MythicalBooksAPI.Models.Auth;
+﻿using MythicalBooksAPI.Models.User;
 
 namespace MythicalBooksAPI.Interfaces.Repositories
 {
