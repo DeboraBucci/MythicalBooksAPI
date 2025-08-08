@@ -31,11 +31,7 @@ namespace MythicalBooksAPI.Controllers
         {
             var response = await _bookService.GetBooksAsync(search, categories, page, pageSize);
 
-            if (response == null)
-                return NotFound("No books found.");
-
             return Ok(response);
-
         }
 
 

@@ -27,61 +27,51 @@ namespace MythicalBooksAPI.Services
                 int pageSize = 2
             )
         {
-            try
-            {
-                var query = _bookRepository.GetQueryableBooks();
+            var query = _bookRepository.GetQueryableBooks();
 
-                if (categories != null && categories.Count == 0)
-                {
-                    query = query.Where(
-                        b => categories.All(
-                            cid => b.BookCategories.Any(
-                                bc => bc.CategoryId == cid
-                                )
+            if (categories != null && categories.Count > 0)
+            {
+                query = query.Where(
+                    b => categories.All(
+                        cid => b.BookCategories.Any(
+                            bc => bc.CategoryId == cid
                             )
-                        );
-                }
-
-                if (!string.IsNullOrEmpty(search))
-                {
-                    query = query.Where(b =>
-                        b.Title.Contains(search) ||
-                        (b.ISBN10 ?? "").Contains(search) ||
-                        (b.ISBN13 ?? "").Contains(search) ||
-                        b.BookAuthors.Any(ba => ba.Author.Name.Contains(search)) ||
-                        b.BookPublishers.Any(bp => bp.Publisher.Name.Contains(search))
+                        )
                     );
-                }
-
-                int totalItems = await _bookRepository.CountQueryableAsync(query);
-                int totalPages = (int) Math.Ceiling(totalItems / (double)pageSize);
-
-                var books = await query
-                    .OrderBy(b => b.Id) // Important: apply OrderBy before Skip/Take
-                    .Skip((page - 1) * (pageSize))
-                    .Take(pageSize)
-                    .Select(b => BookMapper.ToBookDto(b))
-                    .ToListAsync();
-
-                if (books.Count == 0)
-                    throw new Exception();
-
-                var response = new PagedResultDto<BookDto>
-                {
-                    Page = page,
-                    PageSize = pageSize,
-                    TotalItems = totalItems,
-                    TotalPages = totalPages,
-                    Data = books
-                };
-
-                return response;
             }
 
-            catch
+            if (!string.IsNullOrEmpty(search))
             {
-                return null;
+                query = query.Where(b =>
+                    b.Title.Contains(search) ||
+                    (b.ISBN10 ?? "").Contains(search) ||
+                    (b.ISBN13 ?? "").Contains(search) ||
+                    b.BookAuthors.Any(ba => ba.Author.Name.Contains(search)) ||
+                    b.BookPublishers.Any(bp => bp.Publisher.Name.Contains(search))
+                );
             }
+
+            int totalItems = await _bookRepository.CountQueryableAsync(query);
+            int totalPages = (int) Math.Ceiling(totalItems / (double)pageSize);
+
+            var books = await query
+                .OrderBy(b => b.Id) // Important: apply OrderBy before Skip/Take
+                .Skip((page - 1) * (pageSize))
+                .Take(pageSize)
+                .Select(b => BookMapper.ToBookDto(b))
+                .ToListAsync();
+
+
+            var response = new PagedResultDto<BookDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                Data = books
+            };
+
+            return response;
         }
 
 
